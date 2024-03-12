@@ -34,7 +34,7 @@ public class Helper {
         if(array == null) return 0;
         return array.length;
     }
-    public static double[][] convertIntToDouble(int[][] intArray) {
+    public static double[][] IntToDouble(int[][] intArray) {
         double[][] doubleArray = new double[intArray.length][intArray[0].length];
         for (int i = 0; i < intArray.length; i++) {
             for (int j = 0; j < intArray[0].length; j++) {

@@ -171,25 +171,25 @@ public class Process {
                 modifiedArray = modifiedCr.getArray();
                 break;
             case Red:
-                originalArray = Helper.convertIntToDouble(originalRed);
-                modifiedArray = Helper.convertIntToDouble(modifiedRed);
+                originalArray = Helper.IntToDouble(originalRed);
+                modifiedArray = Helper.IntToDouble(modifiedRed);
                 break;
             case Blue:
-                originalArray = Helper.convertIntToDouble(originalBlue);
-                modifiedArray = Helper.convertIntToDouble(modifiedBlue);
+                originalArray = Helper.IntToDouble(originalBlue);
+                modifiedArray = Helper.IntToDouble(modifiedBlue);
                 break;
             case Green:
-                originalArray = Helper.convertIntToDouble(originalGreen);
-                modifiedArray = Helper.convertIntToDouble(modifiedGreen);
+                originalArray = Helper.IntToDouble(originalGreen);
+                modifiedArray = Helper.IntToDouble(modifiedGreen);
                 break;
             case RGB:
-                double[][] originalRedArray = Helper.convertIntToDouble(originalRed);
-                double[][] originalBlueArray = Helper.convertIntToDouble(originalBlue);
-                double[][] originalGreenArray = Helper.convertIntToDouble(originalGreen);
+                double[][] originalRedArray = Helper.IntToDouble(originalRed);
+                double[][] originalBlueArray = Helper.IntToDouble(originalBlue);
+                double[][] originalGreenArray = Helper.IntToDouble(originalGreen);
 
-                double[][] modifiedRedArray = Helper.convertIntToDouble(modifiedRed);
-                double[][] modifiedBlueArray = Helper.convertIntToDouble(modifiedBlue);
-                double[][] modifiedGreenArray = Helper.convertIntToDouble(modifiedGreen);
+                double[][] modifiedRedArray = Helper.IntToDouble(modifiedRed);
+                double[][] modifiedBlueArray = Helper.IntToDouble(modifiedBlue);
+                double[][] modifiedGreenArray = Helper.IntToDouble(modifiedGreen);
 
                 double mseRed = Quality.countMSE(originalRedArray, modifiedRedArray);
                 double mseBlue = Quality.countMSE(originalBlueArray, modifiedBlueArray);
@@ -208,7 +208,6 @@ public class Process {
                 double saeGreen = Quality.countSAE(originalGreenArray, modifiedGreenArray);
 
                 sae = (saeRed + saeBlue + saeGreen) / 3;
-
                 psnr = Quality.countPSNRforRGB(mseRed, mseBlue, saeBlue);
                 return;
             case YCbCr:
@@ -224,7 +223,7 @@ public class Process {
                 double maeCr = Quality.countMAE(originalCr.getArray(), modifiedCr.getArray());
                 double saeCr = Quality.countSAE(originalCr.getArray(), modifiedCr.getArray());
 
-                totalMSE = (mseY + mseCb + mseCr) / 3;
+                totalMSE = (mseY + mseCb + mseCr) / 3; //averaga
                 totalMAE = (maeY + maeCb + maeCr) / 3;
                 totalSAE = (saeY + saeCb + saeCr) / 3;
                 mse = totalMSE;
@@ -243,8 +242,6 @@ public class Process {
 
     }
     public void count(YCbCrType yCbCrType) {
-        double ssim = 0;
-        double mssim = 0;
 
         switch (yCbCrType) {
             case Y:

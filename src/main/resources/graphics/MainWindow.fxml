@@ -214,7 +214,7 @@
                   <Button fx:id="btoqcount" mnemonicParsing="false" onAction="#count" prefHeight="25.0" prefWidth="109.0" text="Count SSIM" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
                   <ComboBox fx:id="SSIMQuality" onAction="#count" prefHeight="25.0" prefWidth="109.0" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
                   <TextField fx:id="ssim" prefHeight="25.0" prefWidth="131.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                  <TextField fx:id="mssim" alignment="CENTER" prefHeight="25.0" prefWidth="145.0" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                  <TextField fx:id="mssim" prefHeight="25.0" prefWidth="145.0" GridPane.columnIndex="2" GridPane.rowIndex="6" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="SSIM" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5">
                      <font>
                         <Font size="15.0" />

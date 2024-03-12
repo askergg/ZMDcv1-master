@@ -97,7 +97,7 @@ public class Quality {
 
 
     public static double countMSSIM(double[][] original, double[][] modified) {
-        int windowSize = 8; // Example window size, could be adjusted
+        int windowSize = 8;
         double mssim = 0.0;
         int count = 0;
 
@@ -123,87 +123,6 @@ public class Quality {
         return window;
     }
 
-
-    /*
-    public static double countSSIM(Matrix original, Matrix modified) {
-
-        int M = original.getRowDimension();
-        int N = original.getColumnDimension();
-
-        double C1 = Math.pow(0.01 * 255, 2);
-        double C2 = Math.pow(0.03 * 255, 2);
-
-        double muX = original.norm1() / (M * N);
-        double muY = modified.norm1() / (M * N);
-
-        double sigmaX = 0;
-        double sigmaY = 0;
-        double sigmaXY = 0;
-
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                double x = original.get(i, j);
-                double y = modified.get(i, j);
-                sigmaX += Math.pow(x - muX, 2);
-                sigmaY += Math.pow(y - muY, 2);
-                sigmaXY += (x - muX) * (y - muY);
-            }
-        }
-
-        sigmaX /= (M * N);
-        sigmaY /= (M * N);
-        sigmaXY /= (M * N);
-
-        double numerator = (2 * muX * muY + C1) * (2 * sigmaXY + C2);
-        double denominator = (muX * muX + muY * muY + C1) * (sigmaX + sigmaY + C2);
-
-        return numerator / denominator;
-    }
-
-    // Method to calculate MSSIM
-    public static double countMSSIM(Matrix original, Matrix modified) {
-
-        int M = original.getRowDimension();
-        int N = original.getColumnDimension();
-
-        double[] weights = {0.0448, 0.2856, 0.3001, 0.2363, 0.1333};
-        double mssim = 1;
-
-        Matrix downsampledOriginal = original;
-        Matrix downsampledModified = modified;
-
-        for (int level = 0; level < 5; level++) {
-            mssim *= Math.pow(countSSIM(downsampledOriginal, downsampledModified), weights[level]);
-
-            if (level < 4) {
-                downsampledOriginal = downsampleMatrix(downsampledOriginal);
-                downsampledModified = downsampleMatrix(downsampledModified);
-            }
-        }
-
-        return mssim;
-    }
-
-    private static Matrix downsampleMatrix(Matrix input) {
-        int M = input.getRowDimension();
-        int N = input.getColumnDimension();
-
-        Matrix output = new Matrix(M / 2, N / 2);
-
-        for (int i = 0; i < M / 2; i++) {
-            for (int j = 0; j < N / 2; j++) {
-                double value = (input.get(2 * i, 2 * j) +
-                        input.get(2 * i, 2 * j + 1) +
-                        input.get(2 * i + 1, 2 * j) +
-                        input.get(2 * i + 1, 2 * j + 1)) / 4;
-                output.set(i, j, value);
-            }
-        }
-
-        return output;
-    }
-
-     */
 }
 
 

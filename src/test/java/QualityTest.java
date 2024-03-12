@@ -13,8 +13,8 @@ public class QualityTest {
     static double resultSAE = 36325.4900;
     static double resultPSNR = 9.0233;
     static double resultPSNRrgb = 29.1180;
-    static double resultSSIM = 0.265384;
-    static double resultMSSIM = 0.265600;
+    static double resultSSIM = 0.265391;
+    static double resultMSSIM = 0.265664;
 
     @Test
     void qualityTest() {

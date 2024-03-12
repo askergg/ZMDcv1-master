@@ -1,13 +1,8 @@
 package enums;
 
 public enum YCbCrType {
-    Y("Y"),
-    Cb("Cb"),
-    Cr("Cr");
+    Y,
+    Cb,
+    Cr;
 
-    String type;
-
-    YCbCrType(String type) {
-        this.type = type;
-    }
 }
