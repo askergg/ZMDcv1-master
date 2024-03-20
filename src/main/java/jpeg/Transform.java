@@ -1,77 +1,74 @@
 package jpeg;
 
 import enums.TransformType;
+import Jama.Matrix;
+
 
 public class Transform {
 
-
-    // Transformace předané barevné složky
-    public static Matrix transform(Matrix input, TransformType type, int blockSize) {
-        // Získání transformační matice
-        Matrix transformMatrix = getTransformMatrix(type, blockSize);
-
-        // Provedení transformace
-        // Příklad použití: transformMatrix * input * transformMatrix.transpose()
-        // Implementaci doplníte podle vaší maticové knihovny
-
-        return null; // Vrátí transformovanou matici
+    public static Matrix transform (Matrix input, TransformType type, int blockSize) {
+        Matrix returnMatrix = new Matrix(input.getRowDimension(), input.getColumnDimension());
+        Matrix A = getTransformMatrix(type, blockSize);
+        Matrix At = A.transpose();
+        for (int row = 0; row < input.getRowDimension(); row += blockSize) {
+            for (int col = 0; col < input.getColumnDimension(); col += blockSize) {
+                Matrix block = input.getMatrix(row,row + blockSize - 1, col, col + blockSize -1);
+                returnMatrix.setMatrix(row,row + blockSize - 1, col, col + blockSize -1,A.times(block).times(At));
+            }
+        }
+        return returnMatrix;
     }
 
-    // Inverzní transformace
-    public static Matrix inverseTransform(Matrix input, TransformType type, int blockSize) {
-        // Získání inverzní transformační matice (pro WHT je to stejná matice, pro DCT transponovaná)
-        Matrix transformMatrix = getTransformMatrix(type, blockSize);
-
-        // Provedení inverzní transformace
-        // Příklad použití: transformMatrix.transpose() * input * transformMatrix
-        // Implementaci doplníte podle vaší maticové knihovny
-
-        return null; // Vrátí původní matici před transformací
+    public static Matrix inverseTransform (Matrix input, TransformType type, int blockSize) {
+        Matrix returnMatrix = new Matrix(input.getRowDimension(), input.getColumnDimension());
+        Matrix A = getTransformMatrix(type, blockSize);
+        Matrix At = A.transpose();
+        for (int row = 0; row < input.getRowDimension(); row += blockSize) {
+            for (int col = 0; col < input.getColumnDimension(); col += blockSize) {
+                Matrix block = input.getMatrix(row,row + blockSize - 1, col, col + blockSize -1);
+                returnMatrix.setMatrix(row,row + blockSize - 1, col, col + blockSize -1,At.times(block).times(A));
+            }
+        }
+        return returnMatrix;
     }
 
-    // Získání transformační matice, generované podle typu a velikosti bloku
-    public static Matrix getTransformMatrix(TransformType type, int blockSize) {
-        switch (type) {
+    public static Matrix getTransformMatrix (TransformType type, int blockSize) {
+        Matrix matrix;
+        switch (type){
             case DCT:
-                return generateDctMatrix(blockSize);
+                matrix = new Matrix(blockSize, blockSize);
+                for (int i = 0; i < blockSize; i ++) {
+                    for (int j = 0; j < blockSize; j ++) {
+                        matrix.set(i,j,(Math.sqrt((double) (i == 0 ? 1 : 2) / blockSize) *
+                                Math.cos(((2 * j + 1) * i * Math.PI) / (2 * blockSize))));
+                    }
+                }break;
+
             case WHT:
-                return generateWhtMatrix(blockSize);
+                matrix = new Matrix(2,2);
+                matrix.set(0,0,1);
+                matrix.set(0,1,1);
+                matrix.set(1,0,1);
+                matrix.set(1,1,-1);
+                for (int i = 4; i <= blockSize; i *= 2){
+                    Matrix newMatrix = new Matrix(i,i);
+                    matrix = helperWHT(matrix, newMatrix, i);
+                }
+                matrix = matrix.times((double) 1/Math.sqrt(blockSize));
+                break;
+
             default:
-                throw new IllegalArgumentException("Neznámý typ transformace");
-        }
-    }
-
-    // Pomocné metody pro generování transformačních matic
-    private static Matrix generateDctMatrix(int n) {
-        Matrix matrix = new Matrix(n, n);
-        double c;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0) c = Math.sqrt(1.0 / n);
-                else c = Math.sqrt(2.0 / n);
-                matrix.set(i, j, c * Math.cos(((2 * j + 1) * i * Math.PI) / (2.0 * n)));
-            }
+                matrix = null;
         }
         return matrix;
     }
 
-    private static Matrix generateWhtMatrix(int n) {
-        Matrix matrix = new Matrix(n, n);
-        // Tento kód je zjednodušený a předpokládá, že n je mocnina dvou
-        int fillVal = 1;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                int xored = i & j;
-                int bitCount = Integer.bitCount(xored);
-                if (bitCount % 2 == 0) matrix.set(i, j, fillVal / Math.sqrt(n));
-                else matrix.set(i, j, -fillVal / Math.sqrt(n));
-            }
-        }
-        return matrix;
-    }
-
-    // Placeholder pro maticovou knihovnu
-    public static class Matrix {
-        // Metody maticové knihovny (např. set, get, times, transpose)
+    public static Matrix helperWHT (Matrix matrix, Matrix newMatrix, int num) {
+        newMatrix.setMatrix(0,num / 2 - 1,0,num / 2 - 1, matrix);
+        newMatrix.setMatrix(0,num / 2 - 1,num / 2,num - 1, matrix);
+        newMatrix.setMatrix(num / 2,num - 1,0,num / 2 - 1, matrix);
+        newMatrix.setMatrix(num / 2,num -1,num / 2,num-1, matrix.uminus());
+        return newMatrix;
     }
 }
+

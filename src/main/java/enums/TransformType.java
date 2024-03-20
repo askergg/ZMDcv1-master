@@ -7,6 +7,7 @@ public enum TransformType {
 
     String name;
 
+    //TransformType();
     TransformType(String name) {
         this.name = name;
     }

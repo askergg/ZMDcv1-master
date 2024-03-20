@@ -2,6 +2,8 @@ package graphics;
 
 import com.sun.javafx.binding.DoubleConstant;
 import core.FileBindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import enums.QualityType;
 import enums.SamplingType;
 import enums.TransformType;
@@ -9,12 +11,7 @@ import enums.YCbCrType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import jpeg.Process;
 
 import javax.imageio.ImageIO;
@@ -127,7 +124,7 @@ public class MainWindowController implements Initializable {
     private ComboBox<TransformType> dropencodetransform;
 
     @FXML
-    private Spinner<?> encodecounter;
+    private Spinner<Integer> encodecounter;
 
     @FXML
     private TextField encodeslidershow;
@@ -179,9 +176,14 @@ public class MainWindowController implements Initializable {
 
     @FXML
     void itransform(ActionEvent event) {
-
+        process.inverseTransform(dropencodetransform.getValue(),encodecounter.getValue());
     }
 
+    @FXML
+    void transform(ActionEvent event) {
+        process.transform(dropencodetransform.getValue(), encodecounter.getValue());
+
+    }
     @FXML
     void modblue(ActionEvent event) {
 
@@ -350,10 +352,7 @@ public class MainWindowController implements Initializable {
         Dialogs.showImageInWindow(ImageIO.read(file), "Original", true);
     }
 
-    @FXML
-    void transform(ActionEvent event) {
 
-    }
 
     @FXML
     void ycbcrtorgb(ActionEvent event) {
@@ -383,6 +382,11 @@ public class MainWindowController implements Initializable {
         dropencodetransform.getItems().addAll(TransformType.values());
         RGBQuality.getItems().addAll(QualityType.values());
         SSIMQuality.getItems().addAll(YCbCrType.Y, YCbCrType.Cb, YCbCrType.Cr);
+        //dropencodetransform.getItems().addAll(TransformType.values());
+        ObservableList<Integer> blocks = FXCollections.observableArrayList(2, 4, 8, 16, 32, 64, 128, 256, 512);
+        SpinnerValueFactory<Integer> spinnerValues = new SpinnerValueFactory.ListSpinnerValueFactory<>(blocks);
+        spinnerValues.setValue(8);
+
 
 
 
@@ -390,6 +394,9 @@ public class MainWindowController implements Initializable {
         dropencodetransform.getSelectionModel().select(TransformType.DCT);
         RGBQuality.getSelectionModel().select(QualityType.RGB);
         SSIMQuality.getSelectionModel().select(YCbCrType.Y);
+        dropencodetransform.getSelectionModel().select(0);
+        encodecounter.setValueFactory(spinnerValues);
+        //encodecounter.getSelectionModel().select(0);
     }
 
 }

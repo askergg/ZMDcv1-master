@@ -2,10 +2,7 @@ package jpeg;
 
 import Jama.Matrix;
 import core.Helper;
-import enums.ColorType;
-import enums.QualityType;
-import enums.SamplingType;
-import enums.YCbCrType;
+import enums.*;
 import graphics.Dialogs;
 
 import java.awt.*;
@@ -52,6 +49,18 @@ public class Process {
         originalCr = new Matrix(imageHeight, imageWidth, 0);
         modifiedCr = new Matrix(imageHeight, imageHeight, 0);
         setOriginalRGB();
+    }
+
+    public void transform(TransformType transformType, int blockSize){
+        modifiedY = Transform.transform(modifiedY,transformType,blockSize);
+        modifiedCb = Transform.transform(modifiedCb,transformType,blockSize);
+        modifiedCr = Transform.transform(modifiedCr,transformType,blockSize);
+    }
+
+    public void inverseTransform(TransformType transformType, int blockSize){
+        modifiedY = Transform.inverseTransform(modifiedY,transformType,blockSize);
+        modifiedCb = Transform.inverseTransform(modifiedCb,transformType,blockSize);
+        modifiedCr = Transform.inverseTransform(modifiedCr,transformType,blockSize);
     }
 
 
@@ -134,14 +143,17 @@ public class Process {
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
                 bfImage.setRGB(w,h,
-                        (new Color((int)color.get(h,w),
-                                (int)color.get(h,w),
-                                (int)color.get(h,w)).getRGB()));
+                        (new Color(roundRange(color.get(h,w)),
+                                roundRange(color.get(h,w)),
+                                roundRange(color.get(h,w))).getRGB()));
             }
         }
         return bfImage;
     }
 
+    public static int roundRange(double num) {
+        return Math.min(Math.max((int) Math.round(num), 0), 255);
+    }
     public void sampleDown (SamplingType samplingType) {
         modifiedCb = Sampling.sampleDown(modifiedCb, samplingType);
         modifiedCr = Sampling.sampleDown(modifiedCr, samplingType);
