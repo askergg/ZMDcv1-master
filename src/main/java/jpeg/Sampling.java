@@ -58,7 +58,7 @@ public class Sampling {
         }
         return sampledMatrix;
     }
-    private static Matrix downSample(Matrix matrix) {
+    public static Matrix downSample(Matrix matrix) {
         int numbRows = matrix.getRowDimension();
         int numbColumns = matrix.getColumnDimension();
         double[][] newMatrix = new double[numbRows][numbColumns/2];

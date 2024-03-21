@@ -155,10 +155,12 @@ public class Process {
         return Math.min(Math.max((int) Math.round(num), 0), 255);
     }
     public void sampleDown (SamplingType samplingType) {
+        modifiedY = Sampling.sampleDown(modifiedY, samplingType);
         modifiedCb = Sampling.sampleDown(modifiedCb, samplingType);
         modifiedCr = Sampling.sampleDown(modifiedCr, samplingType);
     }
     public void sampleUp (SamplingType samplingType) {
+        modifiedY = Sampling.sampleUp(modifiedY, samplingType);
         modifiedCb = Sampling.sampleUp(modifiedCb, samplingType);
         modifiedCr = Sampling.sampleUp(modifiedCr, samplingType);
     }
