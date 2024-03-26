@@ -64,9 +64,6 @@ public class Quantization {
     }
 
     public static Matrix getQuantizationMatrix (int blockSize, double quality, boolean matrixY) {
-        if (quality == 100) {
-            return new Matrix(blockSize, blockSize, 1);
-        }
 
         Matrix returnMatrix;
 
@@ -76,43 +73,30 @@ public class Quantization {
             returnMatrix = matrixVal;
         }
 
-        if (blockSize != 8) {
-            switch (blockSize) {
-                case 4:
-                    returnMatrix = Sampling.downSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    returnMatrix = Sampling.downSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    break;
-                case 16:
-                    returnMatrix = Sampling.upSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    returnMatrix = Sampling.upSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    break;
-                case 32:
-                    returnMatrix = Sampling.upSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    returnMatrix = Sampling.upSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    returnMatrix = Sampling.upSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    returnMatrix = Sampling.upSample(returnMatrix);
-                    returnMatrix = returnMatrix.transpose();
-                    break;
-            }
+        if (quality == 100) {
+            return new Matrix(blockSize, blockSize, 1);
         }
+        if (blockSize < 8) {
+            for (int i = 0; i < blockSize; i += 2){
+                returnMatrix = Sampling.downSample(returnMatrix);
+                returnMatrix = returnMatrix.transpose();
+            }
+        } else if (blockSize > 8) {
+            for (int i = 8; i <= blockSize; i += 8) {
+                returnMatrix = Sampling.upSample(returnMatrix);
+                returnMatrix = returnMatrix.transpose();
+            }
+
         double alpha;
+
         if (quality < 50) {
             alpha = 50 / quality;
-        } else {
+        }
+        else {
             alpha = 2 - ((2 * quality) / 100);
         }
         return returnMatrix.times(alpha);
     }
-
-    public static Matrix helperMatrix(Matrix matrix, Matrix matrixToSet, int row, int column) {
-        matrix.setMatrix(row, matrixToSet.getRowDimension() + row,column,matrixToSet.getColumnDimension() + column, matrixToSet);
-        return matrix;
+        return returnMatrix;
     }
 }

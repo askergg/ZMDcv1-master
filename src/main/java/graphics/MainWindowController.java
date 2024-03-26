@@ -2,6 +2,7 @@ package graphics;
 
 import com.sun.javafx.binding.DoubleConstant;
 import core.FileBindings;
+import core.Helper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import enums.QualityType;
@@ -18,6 +19,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ResourceBundle;
 
 public class MainWindowController implements Initializable {
@@ -127,9 +129,6 @@ public class MainWindowController implements Initializable {
     private Spinner<Integer> encodecounter;
 
     @FXML
-    private TextField encodeslidershow;
-
-    @FXML
     private CheckBox encodesteps;
 
     @FXML
@@ -141,11 +140,22 @@ public class MainWindowController implements Initializable {
     @FXML
     private Slider sliderencode;
 
+    @FXML
+    private TextField encodeslidershow;
+
 
     @FXML
     void decodequantize(ActionEvent event) {
+        process.quantizeImage(encodecounter.getValue(), sliderencode.getValue(), true);
 
     }
+
+    @FXML
+    void encodequantize(ActionEvent event) {
+        process.quantizeImage(encodecounter.getValue(), sliderencode.getValue(), false);
+    }
+
+
     @FXML
     void count(ActionEvent event) {
 
@@ -155,8 +165,8 @@ public class MainWindowController implements Initializable {
         sae.textProperty().set(String.format("%.4f", process.sae));
         psnr.textProperty().set(String.format("%.4f", process.psnr));
         process.count(SSIMQuality.getValue());
-        ssim.textProperty().set(String.format("%.4f", process.ssim));
-        mssim.textProperty().set(String.format("%.4f", process.mssim));
+        ssim.textProperty().set(String.format("%.5f", process.ssim));
+        mssim.textProperty().set(String.format("%.5f", process.mssim));
     }
 
     @FXML
@@ -166,11 +176,6 @@ public class MainWindowController implements Initializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    @FXML
-    void encodequantize(ActionEvent event) {
 
     }
 
@@ -386,10 +391,11 @@ public class MainWindowController implements Initializable {
         ObservableList<Integer> blocks = FXCollections.observableArrayList(2, 4, 8, 16, 32, 64, 128, 256, 512);
         SpinnerValueFactory<Integer> spinnerValues = new SpinnerValueFactory.ListSpinnerValueFactory<>(blocks);
         spinnerValues.setValue(8);
+        encodeslidershow.textProperty().bindBidirectional(sliderencode.valueProperty(), NumberFormat.getIntegerInstance());
 
 
 
-
+        //encodeslidershow.setTextFormatter((new TextFormatter<>(Helper.NUMBER_FORMATER)));
         dropencodesampling.getSelectionModel().select(SamplingType.S_4_4_4);
         dropencodetransform.getSelectionModel().select(TransformType.DCT);
         RGBQuality.getSelectionModel().select(QualityType.RGB);

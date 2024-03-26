@@ -62,6 +62,18 @@ public class Process {
         modifiedCb = Transform.inverseTransform(modifiedCb,transformType,blockSize);
         modifiedCr = Transform.inverseTransform(modifiedCr,transformType,blockSize);
     }
+    public void quantizeImage (int blockSize, double quality, Boolean inverse){
+        if(inverse){
+            modifiedY = Quantization.inverseQuantize(modifiedY, blockSize, quality, true);
+            modifiedCb = Quantization.inverseQuantize(modifiedCb, blockSize, quality, false);
+            modifiedCr = Quantization.inverseQuantize(modifiedCr, blockSize, quality, false);
+        }
+        else{
+            modifiedY = Quantization.quantize(modifiedY, blockSize, quality, true);
+            modifiedCb = Quantization.quantize(modifiedCb, blockSize, quality, false);
+            modifiedCr = Quantization.quantize(modifiedCr, blockSize, quality, false);
+        }
+    }
 
 
     public void setOriginalRGB() {
@@ -243,7 +255,7 @@ public class Process {
                 mse = totalMSE;
                 mae = totalMAE;
                 sae = totalSAE;
-                psnr = Quality.countPSNR(mse);
+                psnr = Math.abs(Quality.countPSNR(mse));
                 return;
             default:
                 return;
@@ -252,7 +264,7 @@ public class Process {
         mse = Quality.countMSE(originalArray, modifiedArray);
         mae = Quality.countMAE(originalArray, modifiedArray);
         sae = Quality.countSAE(originalArray, modifiedArray);
-        psnr = Quality.countPSNR(mse);
+        psnr = Math.abs(Quality.countPSNR(mse));
 
     }
     public void count(YCbCrType yCbCrType) {
