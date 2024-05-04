@@ -2,6 +2,7 @@ package graphics;
 
 import com.sun.javafx.binding.DoubleConstant;
 import core.FileBindings;
+import core.Helper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import enums.QualityType;
@@ -12,18 +13,31 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import jpeg.Attacks;
+import jpeg.LSBWatermark;
 import jpeg.Process;
 
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ResourceBundle;
 
 public class MainWindowController implements Initializable {
 
     Process process = new Process(FileBindings.defaultImage);
+    public static LSBWatermark lsbwatermark = new LSBWatermark();
 
+    @FXML
+    public ComboBox<YCbCrType> watermarkPart;
+
+    @FXML
+    private RadioButton rotate90;
+
+    @FXML
+    private RadioButton rotate45;
+    private ToggleGroup rotation;
 
     @FXML
     private TextField mae;
@@ -127,9 +141,6 @@ public class MainWindowController implements Initializable {
     private Spinner<Integer> encodecounter;
 
     @FXML
-    private TextField encodeslidershow;
-
-    @FXML
     private CheckBox encodesteps;
 
     @FXML
@@ -141,11 +152,25 @@ public class MainWindowController implements Initializable {
     @FXML
     private Slider sliderencode;
 
+    @FXML
+    private TextField encodeslidershow;
+
+    @FXML
+    private Spinner<Integer> watermarkBitdepth;
+
 
     @FXML
     void decodequantize(ActionEvent event) {
+        process.quantizeImage(encodecounter.getValue(), sliderencode.getValue(), true);
 
     }
+
+    @FXML
+    void encodequantize(ActionEvent event) {
+        process.quantizeImage(encodecounter.getValue(), sliderencode.getValue(), false);
+    }
+
+
     @FXML
     void count(ActionEvent event) {
 
@@ -166,11 +191,6 @@ public class MainWindowController implements Initializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    @FXML
-    void encodequantize(ActionEvent event) {
 
     }
 
@@ -374,10 +394,49 @@ public class MainWindowController implements Initializable {
     void modifiedshades(ActionEvent event) {
 
     }
+    @FXML
+    void insertLSBWatermark(ActionEvent event){
+        //insertion of WM LSB
+        lsbwatermark.insertWatermark(watermarkPart.getValue(), watermarkBitdepth.getValue());
+        lsbwatermark.showMarkedImage();
+    }
 
+    @FXML
+    void extractLSBWatermark(ActionEvent event){
+        //extraction of WM LSB
+        lsbwatermark.extractWatermark(watermarkPart.getValue(), watermarkBitdepth.getValue());
+        lsbwatermark.showUnMarkedImage();
+    }
+
+
+    @FXML
+    void attackCompress(ActionEvent event){
+        Attacks.jpegCompression();
+    }
+
+    @FXML
+    void attackMirror(ActionEvent event){
+        Attacks.mirroring();
+    }
+
+    @FXML
+    void attackRotate(ActionEvent event){
+        RadioButton selected =  (RadioButton) rotation.getSelectedToggle();
+        switch(selected.getText()){
+            case "45°":
+                Attacks.rotateImage45();
+                break;
+            case "90°":
+                Attacks.rotateImage90();
+                break;
+            default:
+                break;
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        rotation = new ToggleGroup();
         dropencodesampling.getItems().addAll(SamplingType.values());
         dropencodetransform.getItems().addAll(TransformType.values());
         RGBQuality.getItems().addAll(QualityType.values());
@@ -386,10 +445,18 @@ public class MainWindowController implements Initializable {
         ObservableList<Integer> blocks = FXCollections.observableArrayList(2, 4, 8, 16, 32, 64, 128, 256, 512);
         SpinnerValueFactory<Integer> spinnerValues = new SpinnerValueFactory.ListSpinnerValueFactory<>(blocks);
         spinnerValues.setValue(8);
+        watermarkBitdepth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 8, 1));
+        watermarkBitdepth.setEditable(true);
+        encodeslidershow.textProperty().bindBidirectional(sliderencode.valueProperty(), NumberFormat.getIntegerInstance());
+        watermarkPart.getItems().addAll(YCbCrType.values());
+        watermarkPart.getSelectionModel().select(YCbCrType.Y);
+        rotate90.setToggleGroup(rotation);
+        rotate45.setToggleGroup(rotation);
+        rotate90.setSelected(true);
 
 
 
-
+        //encodeslidershow.setTextFormatter((new TextFormatter<>(Helper.NUMBER_FORMATER)));
         dropencodesampling.getSelectionModel().select(SamplingType.S_4_4_4);
         dropencodetransform.getSelectionModel().select(TransformType.DCT);
         RGBQuality.getSelectionModel().select(QualityType.RGB);
@@ -400,3 +467,4 @@ public class MainWindowController implements Initializable {
     }
 
 }
+

@@ -20,12 +20,12 @@ public class Process {
     private int[][] originalBlue, modifiedBlue;
 
     private BufferedImage originalImage;
-    private int imageHeight;
-    private int imageWidth;
+    public int imageHeight;
+    public int imageWidth;
 
-    private Matrix originalY, modifiedY;
-    private Matrix originalCb, modifiedCb;
-    private Matrix originalCr, modifiedCr;
+    public Matrix originalY, modifiedY;
+    public Matrix originalCb, modifiedCb;
+    public Matrix originalCr, modifiedCr;
 
     public double mse, sae, mae, psnr, ssim, mssim;
     public Process(String path) {
@@ -49,6 +49,7 @@ public class Process {
         originalCr = new Matrix(imageHeight, imageWidth, 0);
         modifiedCr = new Matrix(imageHeight, imageHeight, 0);
         setOriginalRGB();
+        convertToYCbCr();
     }
 
     public void transform(TransformType transformType, int blockSize){
@@ -61,6 +62,18 @@ public class Process {
         modifiedY = Transform.inverseTransform(modifiedY,transformType,blockSize);
         modifiedCb = Transform.inverseTransform(modifiedCb,transformType,blockSize);
         modifiedCr = Transform.inverseTransform(modifiedCr,transformType,blockSize);
+    }
+    public void quantizeImage (int blockSize, double quality, Boolean inverse){
+        if(inverse){
+            modifiedY = Quantization.inverseQuantize(modifiedY, blockSize, quality, true);
+            modifiedCb = Quantization.inverseQuantize(modifiedCb, blockSize, quality, false);
+            modifiedCr = Quantization.inverseQuantize(modifiedCr, blockSize, quality, false);
+        }
+        else{
+            modifiedY = Quantization.quantize(modifiedY, blockSize, quality, true);
+            modifiedCb = Quantization.quantize(modifiedCb, blockSize, quality, false);
+            modifiedCr = Quantization.quantize(modifiedCr, blockSize, quality, false);
+        }
     }
 
 
