@@ -256,7 +256,7 @@ public class Process {
                 mse = totalMSE;
                 mae = totalMAE;
                 sae = totalSAE;
-                psnr = Quality.countPSNR(mse);
+                psnr = Math.abs(Quality.countPSNR(mse));
                 return;
             default:
                 return;
@@ -265,7 +265,7 @@ public class Process {
         mse = Quality.countMSE(originalArray, modifiedArray);
         mae = Quality.countMAE(originalArray, modifiedArray);
         sae = Quality.countSAE(originalArray, modifiedArray);
-        psnr = Quality.countPSNR(mse);
+        psnr = Math.abs(Quality.countPSNR(mse));
 
     }
     public void count(YCbCrType yCbCrType) {
